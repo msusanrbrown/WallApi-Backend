@@ -20,7 +20,11 @@ class LoginView(ObtainAuthToken):
         serializer = AuthSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        token, created = Token.get_or_create(user=user, token_type='login')
+        print('uyeoiqweyoqwieyoq;ewiyqw;eipiweuqepiquwepqowei[qeiqwpoeiwq[eiqw[eiqw[ei')
+        print(Token)
+        print(dir(Token))
+        print('uyeoiqweyoqwieyoq;ewiyqw;eipiweuqepiquwepqowei[qeiqwpoeiwq[eiqw[eiqw[ei')
+        token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'user_id': user.pk, 'email': user.email})
 
 
@@ -83,9 +87,18 @@ class LikeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    # permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
+# class RegisterView(generics.CreateAPIView):
+#     queryset = User.objects.all()
+#     # permission_classes = (AllowAny,)
+#     serializer_class = RegisterSerializer
 
+class RegisterView(APIView):
+    
+    def post(self, request, *args, **kwargs):
 
+        serializer = RegisterSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user = User.objects.filter(username = serializer.validated_data['username']).first()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key, 'user_id': user.pk, 'email': user.email})
